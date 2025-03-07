@@ -4,7 +4,8 @@ import { Box, Paper } from "@mui/material";
 import Masonry from "@mui/lab/Masonry";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { ImageWithSuspense, ImagePlaceholder } from "./ImageWithSuspense";
 
 type ImageType = {
 	id: string;
@@ -32,7 +33,6 @@ interface MasonryGalleryProps {
 }
 
 function MasonryGallery({ images }: MasonryGalleryProps) {
-	// Add client-side only rendering to prevent hydration mismatch
 	const [isClient, setIsClient] = useState(false);
 
 	useEffect(() => {
@@ -74,17 +74,9 @@ function MasonryGallery({ images }: MasonryGalleryProps) {
 							<span className="text-xs">by {image.user}</span>
 						</Label>
 						<Link href={`/images/${image.id}`}>
-							<img
-								src={image.webformatURL}
-								alt={image.tags}
-								loading="lazy"
-								style={{
-									borderBottomLeftRadius: 4,
-									borderBottomRightRadius: 4,
-									display: "block",
-									width: "100%",
-								}}
-							/>
+							<Suspense fallback={<ImagePlaceholder />}>
+								<ImageWithSuspense image={image} />
+							</Suspense>
 							<div className="p-2 text-sm text-gray-600 flex justify-between">
 								<span>❤️ {image.likes}</span>
 								<span>👁️ {image.views}</span>

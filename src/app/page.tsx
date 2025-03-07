@@ -1,5 +1,6 @@
 import { api, HydrateClient } from "~/trpc/server";
-import InfiniteGallery from "./_components/InfiniteGallery";
+import EnhancedInfiniteGallery from "./_components/EnhancedInfiniteGallery";
+import { Suspense } from "react";
 
 type ImageType = {
 	id: string;
@@ -10,6 +11,32 @@ type ImageType = {
 	downloads: number;
 	likes: number;
 	largeImageURL: string;
+};
+
+// Generate unique IDs for placeholders
+const generatePlaceholderId = () =>
+	`home-placeholder-${Math.random().toString(36).substring(2, 9)}`;
+
+// Loading placeholder
+const LoadingPlaceholder = () => {
+	// Pre-generate IDs for placeholders
+	const placeholderIds = Array.from({ length: 12 }, () =>
+		generatePlaceholderId(),
+	);
+
+	return (
+		<div className="w-full">
+			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+				{placeholderIds.map((id) => (
+					<div key={id} className="rounded-lg overflow-hidden shadow-md">
+						<div className="h-6 bg-gray-200 animate-pulse mb-2" />
+						<div className="h-48 bg-gray-300 animate-pulse" />
+						<div className="h-6 bg-gray-200 animate-pulse mt-2" />
+					</div>
+				))}
+			</div>
+		</div>
+	);
 };
 
 export default async function Home() {
@@ -54,7 +81,9 @@ export default async function Home() {
 
 					{/* Masonry Image Gallery with Infinite Scroll */}
 					<div className="px-2">
-						<InfiniteGallery initialImages={featuredImages} />
+						<Suspense fallback={<LoadingPlaceholder />}>
+							<EnhancedInfiniteGallery initialImages={featuredImages} />
+						</Suspense>
 					</div>
 				</div>
 			</main>
