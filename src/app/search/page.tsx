@@ -1,6 +1,6 @@
 import { api, HydrateClient } from "~/trpc/server";
-import MasonryGallery from "../_components/MasonryGallery";
 import Link from "next/link";
+import InfiniteGallery from "../_components/InfiniteGallery";
 
 type ImageType = {
 	id: string;
@@ -33,7 +33,6 @@ export default async function SearchPage({
 
 	const images = searchResults.images as unknown as ImageType[];
 	const totalHits = searchResults.totalHits;
-	const hasMore = searchResults.hasMore;
 
 	return (
 		<HydrateClient>
@@ -55,39 +54,16 @@ export default async function SearchPage({
 					Found {totalHits} {totalHits === 1 ? "image" : "images"}
 				</p>
 
-				{/* Search results */}
+				{/* Search results with infinite scrolling */}
 				<div className="min-h-[50vh]">
 					{images.length > 0 ? (
-						<>
-							<MasonryGallery images={images} />
-
-							{/* Pagination */}
-							{(page > 1 || hasMore) && (
-								<div className="flex justify-center mt-8 gap-4">
-									{page > 1 && (
-										<Link
-											href={`/search?q=${encodeURIComponent(query)}&page=${page - 1}`}
-											className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
-										>
-											Previous Page
-										</Link>
-									)}
-									{hasMore && (
-										<Link
-											href={`/search?q=${encodeURIComponent(query)}&page=${page + 1}`}
-											className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-										>
-											Next Page
-										</Link>
-									)}
-								</div>
-							)}
-						</>
+						<InfiniteGallery initialImages={images} searchQuery={query} />
 					) : (
-						<div className="text-center py-12 bg-white rounded-lg shadow-md">
-							<p className="text-gray-500">
-								No images found for "{query}". Try a different search term.
+						<div className="text-center py-12">
+							<p className="text-xl text-gray-600">
+								No images found for "{query}"
 							</p>
+							<p className="mt-2 text-gray-500">Try a different search term</p>
 						</div>
 					)}
 				</div>
