@@ -13,7 +13,7 @@ type ImageType = {
 
 export default async function Home() {
 	// Fetch featured images
-	const featuredData = await api.pixabay.getFeaturedImages({ count: 24 });
+	const featuredData = await api.pixabay.getFeaturedImages({ count: 48 });
 	const featuredImages = featuredData.images as unknown as ImageType[];
 
 	return (
@@ -44,6 +44,9 @@ export default async function Home() {
 							</form>
 						</div>
 					</div>
+
+					{/* Add spacing between search and gallery */}
+					<div className="pt-24 md:pt-28" />
 
 					{/* Masonry Image Gallery */}
 					<div className="px-2">
