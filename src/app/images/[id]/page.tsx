@@ -37,7 +37,7 @@ export default function ImageDetailPage({ params }: ImageDetailPageProps) {
 			</div>
 			<div className="bg-white rounded-lg shadow-md p-6">
 				<p className="text-gray-700 mb-4">Image ID: {id}</p>
-				<div className="min-h-[50vh]">
+				<div className="min-h-[50vh] overflow-hidden">
 					<ImageDetails id={id} />
 				</div>
 			</div>

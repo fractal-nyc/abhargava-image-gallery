@@ -199,16 +199,18 @@ export const pixabayRouter = createTRPCRouter({
   getFeaturedImages: publicProcedure
     .input(
       z.object({
-        count: z.number().min(3).max(200).default(8),
+        count: z.number().min(3).max(200).default(20),
         imageType: z.enum(["all", "photo", "illustration", "vector"]).default("photo"),
+        page: z.number().default(1),
       })
     )
     .query(async ({ input }) => {
-      const { count, imageType } = input;
+      const { count, imageType, page } = input;
       
       const response = await fetchFromPixabay({
         editors_choice: true,
         per_page: count,
+        page: page,
         image_type: imageType,
         safesearch: true,
         lang: "en",
@@ -219,6 +221,9 @@ export const pixabayRouter = createTRPCRouter({
           ...hit,
           id: String(hit.id), // Convert to string for consistency
         })),
+        total: response.total,
+        totalHits: response.totalHits,
+        hasMore: page * count < response.totalHits,
       };
     }),
     

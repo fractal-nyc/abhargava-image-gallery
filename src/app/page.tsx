@@ -1,5 +1,6 @@
 import { api, HydrateClient } from "~/trpc/server";
-import MasonryGallery from "./_components/MasonryGallery";
+import InfiniteGallery from "./_components/InfiniteGallery";
+
 type ImageType = {
 	id: string;
 	webformatURL: string;
@@ -13,7 +14,10 @@ type ImageType = {
 
 export default async function Home() {
 	// Fetch featured images
-	const featuredData = await api.pixabay.getFeaturedImages({ count: 48 });
+	const featuredData = await api.pixabay.getFeaturedImages({
+		count: 20,
+		page: 1,
+	});
 	const featuredImages = featuredData.images as unknown as ImageType[];
 
 	return (
@@ -48,9 +52,9 @@ export default async function Home() {
 					{/* Add spacing between search and gallery */}
 					<div className="pt-24 md:pt-28" />
 
-					{/* Masonry Image Gallery */}
+					{/* Masonry Image Gallery with Infinite Scroll */}
 					<div className="px-2">
-						<MasonryGallery images={featuredImages} />
+						<InfiniteGallery initialImages={featuredImages} />
 					</div>
 				</div>
 			</main>
