@@ -7,11 +7,23 @@ type ImageType = {
 	webformatURL: string;
 	tags: string;
 	user: string;
+	views: number;
+	downloads: number;
+	likes: number;
+	largeImageURL: string;
 };
 
 export default async function Home() {
-	// This will be replaced with actual data fetching later
-	const featuredImages: ImageType[] = [];
+	// Fetch featured images
+	const featuredData = await api.pixabay.getFeaturedImages({ count: 8 });
+	console.log(featuredData);
+	const featuredImages = featuredData.images as unknown as ImageType[];
+
+	// Fetch random images for different categories
+	const natureImages = await api.pixabay.getImagesByCategory({
+		category: "nature",
+		perPage: 4,
+	});
 
 	return (
 		<HydrateClient>
@@ -88,16 +100,33 @@ export default async function Home() {
 							</Link>
 						</div>
 
-						<Gallery images={featuredImages} />
+						<Gallery images={featuredImages} title="Editor's Choice" />
 
 						{featuredImages.length === 0 && (
 							<div className="text-center py-12 bg-white rounded-lg shadow-md">
 								<p className="text-gray-500">
-									Featured images will appear here once implemented
+									No featured images found. Please check your API key.
 								</p>
 							</div>
 						)}
 					</div>
+
+					{/* Nature Category Preview */}
+					{natureImages.images.length > 0 && (
+						<div className="mb-12">
+							<div className="flex justify-between items-center mb-6">
+								<h2 className="text-2xl font-bold">Nature</h2>
+								<Link
+									href="/category/nature"
+									className="text-blue-600 hover:underline"
+								>
+									View More
+								</Link>
+							</div>
+
+							<Gallery images={natureImages.images as unknown as ImageType[]} />
+						</div>
+					)}
 				</div>
 			</main>
 		</HydrateClient>
