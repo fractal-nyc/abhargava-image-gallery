@@ -4,6 +4,7 @@ import { Box, Paper } from "@mui/material";
 import Masonry from "@mui/lab/Masonry";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 type ImageType = {
 	id: string;
@@ -31,6 +32,21 @@ interface MasonryGalleryProps {
 }
 
 function MasonryGallery({ images }: MasonryGalleryProps) {
+	// Add client-side only rendering to prevent hydration mismatch
+	const [isClient, setIsClient] = useState(false);
+
+	useEffect(() => {
+		setIsClient(true);
+	}, []);
+
+	if (!isClient) {
+		return (
+			<div className="text-center py-12 bg-white rounded-lg shadow-md">
+				<p className="text-gray-500">Loading images...</p>
+			</div>
+		);
+	}
+
 	if (images.length === 0) {
 		return (
 			<div className="text-center py-12 bg-white rounded-lg shadow-md">

@@ -27,17 +27,17 @@ export default async function Home() {
 							<form
 								action="/search"
 								method="GET"
-								className="flex flex-col sm:flex-row gap-2 bg-white/95 backdrop-blur-sm p-3 rounded-lg"
+								className="flex flex-col sm:flex-row gap-2 bg-white/95 backdrop-blur-sm p-3 rounded-xl"
 							>
 								<input
 									type="text"
 									name="q"
 									placeholder="Search for images..."
-									className="flex-grow px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+									className="flex-grow px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
 								/>
 								<button
 									type="submit"
-									className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+									className="px-6 py-3 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 transition-colors"
 								>
 									Search
 								</button>
