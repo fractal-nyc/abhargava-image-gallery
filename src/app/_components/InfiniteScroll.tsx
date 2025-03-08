@@ -12,7 +12,7 @@ type InfiniteScrollProps = {
 
 // Loading spinner component
 const LoadingSpinner = () => (
-	<div className="flex items-center justify-center">
+	<div className="flex items-center justify-center py-4">
 		<div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900" />
 		<span className="ml-2">Loading more...</span>
 	</div>
@@ -26,6 +26,7 @@ export default function InfiniteScroll({
 }: InfiniteScrollProps) {
 	const [loadingMore, setLoadingMore] = useState(false);
 	const observerRef = useRef<HTMLDivElement>(null);
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		const observer = new IntersectionObserver(
@@ -54,21 +55,35 @@ export default function InfiniteScroll({
 		};
 	}, [hasMore, loadMore, loading, loadingMore]);
 
-	return (
-		<div className="w-full">
-			<Suspense
-				fallback={
-					<div className="w-full h-screen flex justify-center items-center">
-						<LoadingSpinner />
-					</div>
+	// Prevent layout shift by maintaining scroll position when new content loads
+	useEffect(() => {
+		const container = scrollContainerRef.current;
+		if (container && loadingMore) {
+			const scrollPosition = window.scrollY;
+			const handleScroll = () => {
+				if (window.scrollY !== scrollPosition) {
+					window.scrollTo(0, scrollPosition);
 				}
-			>
-				{children}
-			</Suspense>
+			};
+
+			window.addEventListener("scroll", handleScroll, { passive: true });
+
+			return () => {
+				window.removeEventListener("scroll", handleScroll);
+			};
+		}
+	}, [loadingMore]);
+
+	return (
+		<div className="w-full" ref={scrollContainerRef}>
+			<div className="min-h-[500px]">{children}</div>
 
 			<div
 				ref={observerRef}
 				className="w-full h-10 flex justify-center items-center my-4"
+				style={{
+					minHeight: (loading || loadingMore) && hasMore ? "50px" : "10px",
+				}}
 			>
 				{(loading || loadingMore) && hasMore && <LoadingSpinner />}
 			</div>

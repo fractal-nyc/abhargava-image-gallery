@@ -1,5 +1,5 @@
 import { api, HydrateClient } from "~/trpc/server";
-import EnhancedInfiniteGallery from "./_components/EnhancedInfiniteGallery";
+import EnhancedInfiniteGallery from "./_components/InfiniteGallery";
 import { Suspense } from "react";
 
 type ImageType = {

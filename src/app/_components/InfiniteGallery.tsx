@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import MasonryGallery from "./MasonryGallery";
 import InfiniteScroll from "./InfiniteScroll";
 import { api } from "~/trpc/react";
@@ -34,19 +34,56 @@ type ImageResponse = {
 	totalHits?: number;
 };
 
-interface InfiniteGalleryProps {
+// Generate unique IDs for placeholders
+const generatePlaceholderId = () =>
+	`placeholder-${Math.random().toString(36).substring(2, 9)}`;
+
+// Loading placeholder for the gallery
+const GalleryPlaceholder = () => {
+	// Pre-generate IDs for placeholders
+	const placeholderIds = Array.from({ length: 12 }, () =>
+		generatePlaceholderId(),
+	);
+
+	return (
+		<div className="w-full min-h-[500px]">
+			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+				{placeholderIds.map((id) => (
+					<div key={id} className="rounded-lg overflow-hidden shadow-md">
+						<div className="h-6 bg-gray-200 animate-pulse mb-2" />
+						<div className="aspect-[4/3] bg-gray-300 animate-pulse" />
+						<div className="h-6 bg-gray-200 animate-pulse mt-2" />
+					</div>
+				))}
+			</div>
+		</div>
+	);
+};
+
+interface EnhancedInfiniteGalleryProps {
 	initialImages: ImageType[];
 	searchQuery?: string;
 }
 
-export default function InfiniteGallery({
+export default function EnhancedInfiniteGallery({
 	initialImages,
 	searchQuery,
-}: InfiniteGalleryProps) {
+}: EnhancedInfiniteGalleryProps) {
 	const [images, setImages] = useState<ImageType[]>(initialImages);
 	const [page, setPage] = useState(1);
 	const [hasMoreImages, setHasMoreImages] = useState(true);
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
+	const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+	// Set initial load to false after component mounts
+	useEffect(() => {
+		// Use a short timeout to allow the browser to calculate layout
+		const timer = setTimeout(() => {
+			setIsInitialLoad(false);
+		}, 200);
+
+		return () => clearTimeout(timer);
+	}, []);
 
 	// Determine which query to use based on whether we have a search query
 	const featuredImagesQuery = api.pixabay.getFeaturedImages.useQuery(
@@ -145,7 +182,13 @@ export default function InfiniteGallery({
 			hasMore={hasMoreImages}
 			loading={isLoadingMore}
 		>
-			<MasonryGallery images={images} />
+			{isInitialLoad ? (
+				<GalleryPlaceholder />
+			) : (
+				<Suspense fallback={<GalleryPlaceholder />}>
+					<MasonryGallery images={images} />
+				</Suspense>
+			)}
 		</InfiniteScroll>
 	);
 }
