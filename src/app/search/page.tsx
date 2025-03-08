@@ -43,17 +43,18 @@ const LoadingPlaceholder = () => {
 export default async function SearchPage({
 	searchParams,
 }: {
-	searchParams: { q?: string; page?: string };
+	searchParams: Promise<{ q?: string; page?: string }>;
 }) {
 	// Get search query from URL parameters
-	const query = searchParams.q || "";
-	const page = Number.parseInt(searchParams.page || "1", 10);
+	const { q, page } = await searchParams;
+	const query = q || "";
+	const pageNumber = Number.parseInt(page || "1", 10);
 	const perPage = 48; // Number of images per page
 
 	// Fetch search results
 	const searchResults = await api.pixabay.searchImages({
 		query,
-		page,
+		page: pageNumber,
 		perPage,
 		safeSearch: true,
 	});

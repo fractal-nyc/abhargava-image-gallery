@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { ImageDetails } from "~/app/_components/ImageDetails";
 
-type ImageDetailPageProps = {
-	params: {
-		id: string;
-	};
-};
-
-export default function ImageDetailPage({ params }: ImageDetailPageProps) {
-	const { id } = params;
+export default async function ImageDetailPage({
+	params: paramsPromise,
+}: {
+	params: Promise<{ id: string }>;
+}) {
+	const { id } = await paramsPromise;
 
 	return (
 		<div className="container mx-auto py-8">

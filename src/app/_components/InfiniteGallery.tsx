@@ -164,6 +164,7 @@ export default function EnhancedInfiniteGallery({
 				setHasMoreImages(false);
 			}
 		} catch (error) {
+			console.error(error);
 			setHasMoreImages(false);
 		} finally {
 			setIsLoadingMore(false);

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { api } from "~/trpc/react";
 
+// Simple interface - just a string ID
 interface ImageDetailsProps {
 	id: string;
 }
